@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Planilha de Gastos</title>
-    <link rel="icon" href="favicon.png" type="Image/x-icon" >
     <style>
         body {
             background-color: rgb(85, 179, 121);
@@ -44,22 +43,13 @@
             display: inline-block;
             cursor: pointer;
         }
-        h2 {
-            font-size: 1rem;
-        }
+
         #totalMes {
             font-size: 1.5rem;
             color: red;
-        }
-        
     </style>
-    
 </head>
 <body>
-
-  
-
-
 
 <div class="gastos-container">
     <h2>Planilha de Gastos - Mês: <span id="mesAtual"></span></h2>
@@ -108,13 +98,7 @@
         let totalPago = 0;
         let totalAPagar = 0;
 
-        // Separando despesas pagas e não pagas
-        const despesasPagas = despesas.filter(d => d.pago);
-        const despesasNaoPagas = despesas.filter(d => !d.pago);
-
-        const todasDespesas = [...despesasNaoPagas, ...despesasPagas];
-
-        todasDespesas.forEach((despesa, index) => {
+        despesas.forEach((despesa, index) => {
             const item = document.createElement('li');
             item.className = despesa.pago ? 'pago' : '';
             item.innerHTML = `
@@ -124,13 +108,12 @@
 
             const deleteButton = document.createElement('button');
             deleteButton.textContent = '🗑';
-            deleteButton.style.width = '50px';
+            deleteButton.style.width = '50px';
             deleteButton.onclick = () => {
                 despesas.splice(index, 1);
                 localStorage.setItem('despesas', JSON.stringify(despesas));
                 renderizarDespesas();
             };
-
             item.appendChild(deleteButton);
             listaDespesas.appendChild(item);
             totalAPagar += parseFloat(despesa.valor);
@@ -147,13 +130,6 @@
     function togglePago(index) {
         const despesas = JSON.parse(localStorage.getItem('despesas'));
         despesas[index].pago = !despesas[index].pago;
-
-        // Se a despesa foi marcada como paga, mova para o final da lista
-        if (despesas[index].pago) {
-            const despesaPaga = despesas.splice(index, 1)[0];
-            despesas.push(despesaPaga);
-        }
-
         localStorage.setItem('despesas', JSON.stringify(despesas));
         renderizarDespesas();
     }
