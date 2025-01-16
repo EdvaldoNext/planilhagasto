@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Planilha de Gastos</title>
+    <link rel="icon" href="favicon.png" type="Image/x-icon" >
+    <style>
+        body {
+            background-color: rgb(85, 179, 121);
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        .gastos-container {
+            max-width: 600px;
+            margin: auto;
+        }
+        input, button {
+            width: 100%;
+            margin: 5px 0;
+            padding: 10px;
+        }
+        input[type="date"] {
+            font-size: 14px; /* Diminuindo um pouco a fonte do campo data */
+        }
+        ul {
+            list-style-type: none;
+            padding: 0;
+        }
+        li {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin: 5px 0;
+        }
+        .pago {
+            color: gray;
+            text-decoration: line-through;
+        }
+        .icone {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            display: inline-block;
+            cursor: pointer;
+        }
+        h2 {
+            font-size: 1rem;
+        }
+        #totalMes {
+            font-size: 1.5rem;
+            color: red;
+        }
+        
+    </style>
+    
+</head>
+<body>
+
+  
+
+
+
+<div class="gastos-container">
+    <h2>Planilha de Gastos - Mês: <span id="mesAtual"></span></h2>
+
+    <input type="text" id="inputDescricao" placeholder="Descrição da despesa">
+    <input type="date" id="inputData" placeholder="Data de vencimento">
+    <input type="number" id="inputValor" placeholder="Valor a ser pago" step="0.01" min="0">
+    <button id="btn_adicionarDespesa" onclick="adicionarDespesa()">Adicionar Despesa</button>
+
+    <ul id="listaDespesas"></ul>
+
+    <h2>Total Pago: R$ <span id="totalPago">0.00</span></h2>
+    <h2>Total a Pagar: R$ <span id="totalAPagar">0.00</span></h2>
+    <h2>Total do Mês: R$ <span id="totalMes">0.00</span></h2>
+</div>
+
+<script>
+    const mesAtual = new Date().toLocaleString('pt-BR', { month: 'long' });
+    document.getElementById('mesAtual').textContent = mesAtual.charAt(0).toUpperCase() + mesAtual.slice(1);
+
+    function adicionarDespesa() {
+        const descricaoInput = document.getElementById('inputDescricao');
+        const dataInput = document.getElementById('inputData');
+        const valorInput = document.getElementById('inputValor');
+
+        const descricao = descricaoInput.value;
+        const data = new Date(dataInput.value).toLocaleDateString('pt-BR'); // Formato: dia/mês/ano
+        const valor = valorInput.value;
+
+        if (descricao && data && valor) {
+            const despesas = JSON.parse(localStorage.getItem('despesas')) || [];
+            despesas.push({ descricao, data, valor, pago: false });
+            localStorage.setItem('despesas', JSON.stringify(despesas));
+            descricaoInput.value = '';
+            dataInput.value = '';
+            valorInput.value = '';
+            renderizarDespesas();
+        }
+    }
+
+    function renderizarDespesas() {
+        const despesas = JSON.parse(localStorage.getItem('despesas')) || [];
+        const listaDespesas = document.getElementById('listaDespesas');
+        listaDespesas.innerHTML = '';
+
+        let totalPago = 0;
+        let totalAPagar = 0;
+
+        // Separando despesas pagas e não pagas
+        const despesasPagas = despesas.filter(d => d.pago);
+        const despesasNaoPagas = despesas.filter(d => !d.pago);
+
+        const todasDespesas = [...despesasNaoPagas, ...despesasPagas];
+
+        todasDespesas.forEach((despesa, index) => {
+            const item = document.createElement('li');
+            item.className = despesa.pago ? 'pago' : '';
+            item.innerHTML = `
+                <span class="icone" style="background-color: ${despesa.pago ? 'red' : 'green'};" onclick="togglePago(${index})"></span>
+                ${despesa.descricao} - ${despesa.data} - R$ ${despesa.valor}
+            `;
+
+            const deleteButton = document.createElement('button');
+            deleteButton.textContent = '🗑';
+            deleteButton.style.width = '50px';
+            deleteButton.onclick = () => {
+                despesas.splice(index, 1);
+                localStorage.setItem('despesas', JSON.stringify(despesas));
+                renderizarDespesas();
+            };
+
+            item.appendChild(deleteButton);
+            listaDespesas.appendChild(item);
+            totalAPagar += parseFloat(despesa.valor);
+            if (despesa.pago) {
+                totalPago += parseFloat(despesa.valor);
+            }
+        });
+
+        document.getElementById('totalPago').textContent = totalPago.toFixed(2);
+        document.getElementById('totalAPagar').textContent = (totalAPagar - totalPago).toFixed(2);
+        document.getElementById('totalMes').textContent = (totalPago + (totalAPagar - totalPago)).toFixed(2); // Total do mês
+    }
+
+    function togglePago(index) {
+        const despesas = JSON.parse(localStorage.getItem('despesas'));
+        despesas[index].pago = !despesas[index].pago;
+
+        // Se a despesa foi marcada como paga, mova para o final da lista
+        if (despesas[index].pago) {
+            const despesaPaga = despesas.splice(index, 1)[0];
+            despesas.push(despesaPaga);
+        }
+
+        localStorage.setItem('despesas', JSON.stringify(despesas));
+        renderizarDespesas();
+    }
+
+    window.onload = function() {
+        renderizarDespesas();
+    };
+</script>
+
+</body>
+</html>
