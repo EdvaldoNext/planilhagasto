@@ -1,57 +1,116 @@
 <!DOCTYPE html>
-<html lang="pt-br">
-
+<html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Planilha de Gastos</title>
+    <title>Planilha de Gastos 2025</title>
     <style>
-        body {
-            background-color: #333131;
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
             font-family: Arial, sans-serif;
-            margin: 20px;
-            color: #7e6fe2
         }
 
-        .gastos-container {
-            max-width: 600px;
-            margin: auto;
+        body {
+            background-color: #f0f2f5;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
         }
 
-        input,
-        button {
+        .container {
+            max-width: 800px;
             width: 100%;
-            margin: 5px 0;
+            padding: 20px;
+            background: #fff;
+            border-radius: 10px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 20px;
+        }
+
+        .tabs {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 20px;
+            justify-content: center;
+        }
+
+        .tab-button {
+            padding: 10px 20px;
+            border: none;
+            background: #e0e0e0;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: background 0.3s;
+        }
+
+        .tab-button:hover {
+            background: #d0d0d0;
+        }
+
+        .tab-button.active {
+            background: #007bff;
+            color: #fff;
+        }
+
+        .form {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .form input, .form select, .form button {
             padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 1rem;
+            flex: 1;
         }
 
-        button {
-            color: red;
-            font-size: 1.2rem;
+        .form input[type="date"] {
+            font-size: 0.9rem;
         }
 
-        input[type="date"] {
-            font-size: 14px;
-            /* Diminuindo um pouco a fonte do campo data */
+        .form button {
+            background: #007bff;
+            color: #fff;
+            border: none;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        .form button:hover {
+            background: #0056b3;
         }
 
         ul {
             list-style-type: none;
             padding: 0;
+            margin-bottom: 20px;
         }
 
         li {
             display: flex;
-            justify-content: space-between;
             align-items: center;
-            font-weight: bold;
+            justify-content: space-between;
+            padding: 10px;
+            background: #f8f9fa;
+            border-radius: 5px;
+            margin-bottom: 5px;
             font-size: 1rem;
-            margin: 5px 0;
-            width: 100%;
         }
 
-        .pago {
-            color: gray;
+        li.pago {
+            color: #6c757d;
             text-decoration: line-through;
         }
 
@@ -59,161 +118,229 @@
             width: 20px;
             height: 20px;
             border-radius: 50%;
-            display: inline-block;
             cursor: pointer;
-
-
+            margin-right: 10px;
         }
 
-
-        #btn_adicionarDespesa {
-            color: black;
-            background-color: #7FFFD4;
-            font-weight: bold;
-
+        .delete-button {
+            background: #dc3545;
+            color: #fff;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background 0.3s;
         }
 
-        #inputValor {
+        .delete-button:hover {
+            background: #c82333;
+        }
+
+        .summary {
             display: flex;
-            align-items: center;
-            justify-content: center;
-            background-color: #7FFFD4;
-            width: 93%;
-            font-weight: bold;
-            color: black;
-
-
+            justify-content: space-between;
+            flex-wrap: wrap;
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 5px;
         }
 
-        #inputData {
-            font-size: 1rem;
-            background-color: #7FFFD4;
-            width: 93%;
-            font-weight: bold;
-            color: black;
-            margin-left: 0%;
-            margin-right: 0%;
-
+        .summary h2 {
+            font-size: 1.2rem;
+            margin: 5px 0;
+            color: #333;
         }
 
-        #inputDescricao {
-            background-color: #7FFFD4;
-            width: 93%;
-            font-weight: bold;
-            color: black;
-            margin-left: 0%;
-            margin-right: 0%;
+        .summary h2 span {
+            color: #007bff;
         }
 
-
-        #totalMes {
-            font-size: 1.5rem;
-            color: red;
-        }
-
-        #totalPago {
-            font-size: 1.5rem;
-            color: rgb(9, 211, 26);
-        }
-
-        #totalAPagar {
-            font-size: 1.5rem;
-            color: rgb(211, 224, 16);
+        @media (max-width: 600px) {
+            .form {
+                flex-direction: column;
+            }
+            .summary {
+                flex-direction: column;
+                align-items: flex-start;
+            }
         }
     </style>
 </head>
-
 <body>
-
-    <div class="gastos-container">
-        <h2>Planilha de Gastos - Mês: <span id="mesAtual"></span></h2>
-
-        <input type="text" id="inputDescricao" placeholder="Descrição da despesa">
-        <input type="date" id="inputData" placeholder="Data de vencimento">
-        <input type="number" id="inputValor" placeholder="Valor a ser pago" step="0.01" min="0">
-        <button id="btn_adicionarDespesa" onclick="adicionarDespesa()">Adicionar Despesa</button>
-
+    <div class="container">
+        <h1>Planilha de Gastos 2025</h1>
+        <div class="tabs">
+            <button class="tab-button active" onclick="switchTab(0)">Janeiro</button>
+            <button class="tab-button" onclick="switchTab(1)">Fevereiro</button>
+            <button class="tab-button" onclick="switchTab(2)">Março</button>
+            <button class="tab-button" onclick="switchTab(3)">Abril</button>
+            <button class="tab-button" onclick="switchTab(4)">Maio</button>
+            <button class="tab-button" onclick="switchTab(5)">Junho</button>
+            <button class="tab-button" onclick="switchTab(6)">Julho</button>
+            <button class="tab-button" onclick="switchTab(7)">Agosto</button>
+            <button class="tab-button" onclick="switchTab(8)">Setembro</button>
+            <button class="tab-button" onclick="switchTab(9)">Outubro</button>
+            <button class="tab-button" onclick="switchTab(10)">Novembro</button>
+            <button class="tab-button" onclick="switchTab(11)">Dezembro</button>
+        </div>
+        <div class="form">
+            <input type="text" id="inputDescricao" placeholder="Descrição">
+            <input type="date" id="inputData">
+            <input type="number" id="inputValor" placeholder="Valor" step="0.01" min="0">
+            <select id="inputTipo">
+                <option value="entrada">Entrada</option>
+                <option value="saida">Saída</option>
+            </select>
+            <button id="btn_adicionarDespesa" onclick="adicionarDespesa()">Adicionar</button>
+        </div>
         <ul id="listaDespesas"></ul>
-
-        <h2>Total Pago: R$ <span id="totalPago">0.00</span></h2>
-        <h2>Total a Pagar: R$ <span id="totalAPagar">0.00</span></h2>
-        <h2>Total do Mês: R$ <span id="totalMes">0.00</span></h2>
+        <div class="summary">
+            <h2>Saldo Inicial: R$ <span id="saldoInicial">0.00</span></h2>
+            <h2>Total Entradas: R$ <span id="totalEntradas">0.00</span></h2>
+            <h2>Total Saídas: R$ <span id="totalSaidas">0.00</span></h2>
+            <h2>Saldo Final: R$ <span id="saldoFinal">0.00</span></h2>
+        </div>
     </div>
-
     <script>
-        const mesAtual = new Date().toLocaleString('pt-BR', { month: 'long' });
-        document.getElementById('mesAtual').textContent = mesAtual.charAt(0).toUpperCase() + mesAtual.slice(1);
+        let currentMonth = 0;
+        let months = [
+            { name: "Janeiro", entries: [], initialBalance: 0 },
+            { name: "Fevereiro", entries: [], initialBalance: 0 },
+            { name: "Março", entries: [], initialBalance: 0 },
+            { name: "Abril", entries: [], initialBalance: 0 },
+            { name: "Maio", entries: [], initialBalance: 0 },
+            { name: "Junho", entries: [], initialBalance: 0 },
+            { name: "Julho", entries: [], initialBalance: 0 },
+            { name: "Agosto", entries: [], initialBalance: 0 },
+            { name: "Setembro", entries: [], initialBalance: 0 },
+            { name: "Outubro", entries: [], initialBalance: 0 },
+            { name: "Novembro", entries: [], initialBalance: 0 },
+            { name: "Dezembro", entries: [], initialBalance: 0 }
+        ];
 
+        // Carregar dados do localStorage
+        function loadData() {
+            const savedData = localStorage.getItem('expenseData');
+            if (savedData) {
+                months = JSON.parse(savedData);
+            }
+            renderizarDespesas();
+        }
+
+        // Salvar dados no localStorage
+        function saveData() {
+            localStorage.setItem('expenseData', JSON.stringify(months));
+        }
+
+        // Alternar entre meses
+        function switchTab(monthIndex) {
+            currentMonth = monthIndex;
+            document.querySelectorAll('.tab-button').forEach((btn, index) => {
+                btn.classList.toggle('active', index === monthIndex);
+            });
+            renderizarDespesas();
+        }
+
+        // Adicionar despesa ou entrada
         function adicionarDespesa() {
-            const descricaoInput = document.getElementById('inputDescricao');
-            const dataInput = document.getElementById('inputData');
-            const valorInput = document.getElementById('inputValor');
+            const descricao = document.getElementById('inputDescricao').value;
+            const data = document.getElementById('inputData').value;
+            const valor = parseFloat(document.getElementById('inputValor').value);
+            const tipo = document.getElementById('inputTipo').value;
 
-            const descricao = descricaoInput.value;
-            const data = new Date(dataInput.value).toLocaleDateString('pt-BR'); // Formato: dia/mês/ano
-            const valor = valorInput.value;
-
-            if (descricao && data && valor) {
-                const despesas = JSON.parse(localStorage.getItem('despesas')) || [];
-                despesas.push({ descricao, data, valor, pago: false });
-                localStorage.setItem('despesas', JSON.stringify(despesas));
-                descricaoInput.value = '';
-                dataInput.value = '';
-                valorInput.value = '';
+            if (descricao && data && !isNaN(valor)) {
+                months[currentMonth].entries.push({
+                    descricao,
+                    data: new Date(data).toLocaleDateString('pt-BR'),
+                    valor,
+                    tipo,
+                    pago: tipo === 'saida' ? false : true // Entradas são consideradas pagas
+                });
+                saveData();
                 renderizarDespesas();
+                document.getElementById('inputDescricao').value = '';
+                document.getElementById('inputData').value = '';
+                document.getElementById('inputValor').value = '';
             }
         }
 
+        // Marcar como pago
+        function togglePago(index) {
+            months[currentMonth].entries[index].pago = !months[currentMonth].entries[index].pago;
+            saveData();
+            renderizarDespesas();
+        }
+
+        // Excluir entrada
+        function excluirEntrada(index) {
+            months[currentMonth].entries.splice(index, 1);
+            saveData();
+            renderizarDespesas();
+        }
+
+        // Calcular saldo de um mês
+        function calculateBalance(monthIndex) {
+            const initialBalance = monthIndex > 0 ? calculateBalance(monthIndex - 1) : 0;
+            const totalEntradas = months[monthIndex].entries
+                .filter(entry => entry.tipo === 'entrada')
+                .reduce((sum, entry) => sum + entry.valor, 0);
+            const totalSaidas = months[monthIndex].entries
+                .filter(entry => entry.tipo === 'saida' && entry.pago)
+                .reduce((sum, entry) => sum + entry.valor, 0);
+            return initialBalance + totalEntradas - totalSaidas;
+        }
+
+        // Renderizar despesas
         function renderizarDespesas() {
-            const despesas = JSON.parse(localStorage.getItem('despesas')) || [];
             const listaDespesas = document.getElementById('listaDespesas');
             listaDespesas.innerHTML = '';
 
-            let totalPago = 0;
-            let totalAPagar = 0;
+            // Calcular saldo inicial
+            const initialBalance = currentMonth > 0 ? calculateBalance(currentMonth - 1) : 0;
+            months[currentMonth].initialBalance = initialBalance;
 
-            despesas.forEach((despesa, index) => {
+            // Renderizar entradas
+            months[currentMonth].entries.forEach((entry, index) => {
                 const item = document.createElement('li');
-                item.className = despesa.pago ? 'pago' : '';
+                item.className = entry.pago && entry.tipo === 'saida' ? 'pago' : '';
                 item.innerHTML = `
-                <span class="icone" style="background-color: ${despesa.pago ? 'red' : 'green'};" onclick="togglePago(${index})"></span>
-                ${despesa.descricao} - ${despesa.data} - R$ ${despesa.valor}
-            `;
-
+                    ${entry.tipo === 'saida' ? `<span class="icone" style="background-color: ${entry.pago ? 'red' : 'green'};" onclick="togglePago(${index})"></span>` : '<span class="icone" style="background-color: blue;"></span>'}
+                    ${entry.descricao} - ${entry.data} - R$ ${entry.valor.toFixed(2)} (${entry.tipo === 'entrada' ? 'Entrada' : 'Saída'})
+                `;
                 const deleteButton = document.createElement('button');
+                deleteButton.className = 'delete-button';
                 deleteButton.textContent = '🗑';
-                deleteButton.style.width = '50px';
-                deleteButton.onclick = () => {
-                    despesas.splice(index, 1);
-                    localStorage.setItem('despesas', JSON.stringify(despesas));
-                    renderizarDespesas();
-                };
+                deleteButton.onclick = () => excluirEntrada(index);
                 item.appendChild(deleteButton);
                 listaDespesas.appendChild(item);
-                totalAPagar += parseFloat(despesa.valor);
-                if (despesa.pago) {
-                    totalPago += parseFloat(despesa.valor);
-                }
             });
 
-            document.getElementById('totalPago').textContent = totalPago.toFixed(2);
-            document.getElementById('totalAPagar').textContent = (totalAPagar - totalPago).toFixed(2);
-            document.getElementById('totalMes').textContent = (totalPago + (totalAPagar - totalPago)).toFixed(2); // Total do mês
+            // Calcular totais
+            const totalEntradas = months[currentMonth].entries
+                .filter(entry => entry.tipo === 'entrada')
+                .reduce((sum, entry) => sum + entry.valor, 0);
+            const totalSaidas = months[currentMonth].entries
+                .filter(entry => entry.tipo === 'saida' && entry.pago)
+                .reduce((sum, entry) => sum + entry.valor, 0);
+            const saldoFinal = initialBalance + totalEntradas - totalSaidas;
+
+            // Atualizar sumário
+            document.getElementById('saldoInicial').textContent = initialBalance.toFixed(2);
+            document.getElementById('totalEntradas').textContent = totalEntradas.toFixed(2);
+            document.getElementById('totalSaidas').textContent = totalSaidas.toFixed(2);
+            document.getElementById('saldoFinal').textContent = saldoFinal.toFixed(2);
+
+            // Atualizar saldo inicial do próximo mês
+            if (currentMonth < 11) {
+                months[currentMonth + 1].initialBalance = saldoFinal;
+                saveData();
+            }
         }
 
-        function togglePago(index) {
-            const despesas = JSON.parse(localStorage.getItem('despesas'));
-            despesas[index].pago = !despesas[index].pago;
-            localStorage.setItem('despesas', JSON.stringify(despesas));
-            renderizarDespesas();
-        }
-
+        // Inicializar
         window.onload = function () {
-            renderizarDespesas();
+            loadData();
         };
     </script>
-
 </body>
-
 </html>
-
